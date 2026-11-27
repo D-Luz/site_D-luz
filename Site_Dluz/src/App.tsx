@@ -3,6 +3,27 @@ import { useEffect, useState } from "react";
 type SiteMode = "lighting" | "electrical";
 
 const A = "/assets";
+const companyWhatsApp = (import.meta.env.VITE_DLUZ_WHATSAPP as string | undefined)?.trim() ?? "";
+const companyEmail = (import.meta.env.VITE_DLUZ_EMAIL as string | undefined)?.trim() ?? "";
+
+function openContactChannel(subject: string, contactDetails = "") {
+  const details = contactDetails ? `\n${contactDetails}` : "";
+  const message = encodeURIComponent(`Olá! Gostaria de informações sobre: ${subject}.${details}`);
+
+  if (companyWhatsApp) {
+    window.open(`https://wa.me/${companyWhatsApp}?text=${message}`, "_blank", "noopener,noreferrer");
+    return true;
+  }
+
+  if (companyEmail) {
+    const mailSubject = encodeURIComponent(`D.LUZ — ${subject}`);
+    window.location.href = `mailto:${companyEmail}?subject=${mailSubject}&body=${message}`;
+    return true;
+  }
+
+  document.querySelector("#orcamento")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  return false;
+}
 
 function Brand({ mode }: { mode: SiteMode }) {
   return mode === "lighting" ? (
@@ -232,9 +253,9 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                       <span>{color}</span>
                       <span>{index % 2 ? "IP20" : "IRC 95"}</span>
                     </div>
-                    <a href="#orcamento">
+                    <ContactLink subject={`Consulta sobre o produto ${name}`}>
                       Ver detalhes <Arrow />
-                    </a>
+                    </ContactLink>
                   </article>
                 ))}
             </div>
@@ -274,9 +295,9 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                   <h3>{title}</h3>
                   <p>{text}</p>
                   <b>{tag}</b>
-                  <a href="#orcamento">
+                  <ContactLink subject={`Linha de iluminação: ${title}`}>
                     {index === 2 ? "Falar com consultor" : "Ver produtos"} <Arrow />
-                  </a>
+                  </ContactLink>
                 </article>
               ))}
             </div>
@@ -360,9 +381,9 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                 Acompanhamos seu projeto do primeiro esboço à última lâmpada acesa, com equipe
                 técnica especializada.
               </p>
-              <a className="btn btn-teal" href="#orcamento">
+              <ContactLink className="btn btn-teal" subject="Agendamento de visita técnica de iluminação">
                 Agendar visita técnica <Arrow />
-              </a>
+              </ContactLink>
             </div>
             <div className="service-cards">
               {[
@@ -495,9 +516,9 @@ function SectionIntro({
       <h2>{title}</h2>
       {description && <p>{description}</p>}
       {link && (
-        <a href="#orcamento">
+        <ContactLink subject={`Informações sobre: ${title}`}>
           {link} <Arrow />
-        </a>
+        </ContactLink>
       )}
     </div>
   );
@@ -517,10 +538,10 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
 
   const categories = ["Fios e Cabos", "Disjuntores e Proteção", "Tomadas e Interruptores"];
   const products = [
-    ["Cabo Flexível 2,5mm²", "Rolo 100m · 750V", "Mais vendido"],
-    ["Disjuntor DIN Bipolar 32A", "Curva C · 5kA", "Novo"],
-    ["Tomada 20A Linha Prime", "2P+T · 250V", ""],
-    ["DPS Classe II 20kA", "275V · Contra surtos", ""],
+    ["Cabo Flexível 2,5mm²", "Rolo 100 m · 750 V", ""],
+    ["Disjuntor DIN Bipolar 32A", "Curva C · capacidade de interrupção 5 kA", ""],
+    ["Tomada 20A Linha Prime", "2P+T · 250 V", ""],
+    ["DPS Classe II 20 kA", "275 V · proteção contra surtos", ""],
   ];
   return (
     <div className="electrical-site" id="top">
@@ -545,18 +566,18 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                 <a className="btn btn-black" href="#produtos">
                   Ver materiais <Arrow />
                 </a>
-                <a className="btn btn-light-outline" href="#orcamento">
+                <ContactLink className="btn btn-light-outline" subject="Atendimento com eletricista">
                   Chamar eletricista
-                </a>
+                </ContactLink>
               </div>
               <div className="electrical-metrics">
                 <div>
-                  <strong>+15 mil</strong>
-                  <span>itens em estoque</span>
+                  <strong>Mais</strong>
+                  <span>opções para projetos</span>
                 </div>
                 <div>
                   <strong>24h</strong>
-                  <span>entrega e plantão</span>
+                  <span>contato para emergências</span>
                 </div>
                 <div>
                   <strong>NR-10</strong>
@@ -588,8 +609,8 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
             <SectionIntro
               eyebrow="MATERIAIS ELÉTRICOS"
               title="Tudo para sua instalação"
-              description="Das marcas mais confiáveis do mercado, com estoque pronto para obras residenciais, comerciais e industriais."
-              link="Ver catálogo completo"
+              description="Conheça famílias de materiais para obras residenciais, comerciais e industriais e consulte a opção adequada ao seu projeto."
+              link="Consultar materiais"
             />
             <div className="electric-categories">
               {categories.map((name, index) => (
@@ -600,7 +621,7 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                   </div>
                   <div>
                     <h3>{name}</h3>
-                    <p>{[320, 185, 410][index]} itens</p>
+                    <p>Conheça esta linha de materiais</p>
                   </div>
                 </article>
               ))}
@@ -610,24 +631,25 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
 
         <section className="sand-section">
           <div className="electrical-shell">
-            <SectionIntro eyebrow="DESTAQUES" title="Os mais pedidos da semana" />
+            <SectionIntro eyebrow="DESTAQUES" title="Materiais em evidência" />
             <div className="electric-products">
-              {products.map(([name, specs, badge], index) => (
+              {[
+                ["Cabo Flexível 2,5mm²", "Rolo 100 m · 750 V", ""],
+                ["Disjuntor DIN Bipolar 32A", "Curva C · capacidade de interrupção 5 kA", ""],
+                ["Tomada 20A Linha Prime", "2P+T · 250 V", ""],
+                ["DPS Classe II 20 kA", "275 V · proteção contra surtos", ""],
+              ].map(([name, specs], index) => (
                 <article key={name}>
                   <div className="electric-product-shot">
-                    {badge && <b>{badge}</b>}
                     <span className={`product-shape shape-${index + 1}`} />
                   </div>
                   <small>{["FIOS E CABOS", "PROTEÇÃO", "TOMADAS", "PROTEÇÃO"][index]}</small>
                   <h3>{name}</h3>
                   <p>{specs}</p>
                   <footer>
-                    <i />
-                    <i />
-                    <i />
-                    <a href="#orcamento">
-                      Orçar <Arrow />
-                    </a>
+                    <ContactLink subject={`Consulta do produto: ${name}`}>
+                      Consultar produto
+                    </ContactLink>
                   </footer>
                 </article>
               ))}
@@ -667,12 +689,20 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                   <p>{text}</p>
                   <strong>
                     {index === 0
-                      ? "Visita gratuita"
+                      ? "Atendimento residencial"
                       : index === 1
-                        ? "Em até 48h"
-                        : "Atendimento dedicado"}
+                        ? "Atendimento empresarial"
+                        : "Atendimento técnico especializado"}
                   </strong>
-                  <a href="#orcamento">{cta}</a>
+                  <a
+                    href="#orcamento"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      openContactChannel(`${title} — ${cta}`);
+                    }}
+                  >
+                    {cta}
+                  </a>
                   <ul>
                     <li>Equipe certificada</li>
                     <li>Materiais de procedência</li>
@@ -762,9 +792,11 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
               <small className="calculation-note">
                 Estimativa técnica, não substitui projeto elétrico ou cálculo conforme NBR 5410.
               </small>
-              <a href="#orcamento">
-                Orçar estes materiais <Arrow />
-              </a>
+              <ContactLink
+                subject={`Consulta técnica — potência ${power.toLocaleString("pt-BR")} W, tensão ${voltage} V, cabo ${cable} mm² e disjuntor ${breaker} A`}
+              >
+                Consultar estas informações <Arrow />
+              </ContactLink>
             </div>
           </div>
         </section>
@@ -790,9 +822,9 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                   <h3>{title}</h3>
                   <p>{text}</p>
                   {index === 5 && (
-                    <a href="#orcamento">
+                    <ContactLink subject="Plantão emergencial elétrico">
                       Chamar agora <Arrow />
-                    </a>
+                    </ContactLink>
                   )}
                 </article>
               ))}
@@ -869,26 +901,6 @@ function ContactBanner({ mode }: { mode: SiteMode }) {
   const [need, setNeed] = useState("");
   const [status, setStatus] = useState("");
 
-  // Substitua apenas o conteúdo entre aspas pelo número oficial da D.LUZ.
-  const whatsappNumber = "";
-
-  const openWhatsApp = () => {
-    if (!name.trim() || !phone.trim() || !need) {
-      setStatus("Preencha seu nome, WhatsApp e escolha o que você precisa.");
-      return;
-    }
-
-    if (!whatsappNumber) {
-      setStatus("O número oficial do WhatsApp será conectado em breve.");
-      return;
-    }
-
-    const message = encodeURIComponent(
-      `Olá! Meu nome é ${name.trim()}. Telefone/WhatsApp: ${phone.trim()}. Preciso de: ${need}.`,
-    );
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank", "noopener,noreferrer");
-  };
-
   return (
     <section
       className={`contact-section ${lighting ? "contact-dark" : "contact-warm"}`}
@@ -911,7 +923,16 @@ function ContactBanner({ mode }: { mode: SiteMode }) {
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            openWhatsApp();
+            if (!name.trim() || !phone.trim() || !need) {
+              setStatus("Preencha seu nome, WhatsApp e escolha o que você precisa.");
+              return;
+            }
+
+            const sent = openContactChannel(
+              need,
+              `Nome: ${name.trim()}\nWhatsApp: ${phone.trim()}`,
+            );
+            setStatus(sent ? "Abrindo o canal de contato externo…" : "Configure o WhatsApp ou e-mail da empresa para concluir o contato.");
           }}
         >
           <div>
@@ -948,7 +969,7 @@ function ContactBanner({ mode }: { mode: SiteMode }) {
               </>
             ) : (
               <>
-                <option>Comprar materiais elétricos</option>
+                <option>Consulta sobre materiais elétricos</option>
                 <option>Instalação elétrica</option>
                 <option>Manutenção ou emergência</option>
                 <option>Projeto elétrico com ART</option>
@@ -956,8 +977,22 @@ function ContactBanner({ mode }: { mode: SiteMode }) {
             )}
           </select>
           <div className="contact-actions">
-            <button type="submit">Solicitar orçamento</button>
-            <button type="button" className="whatsapp-button" onClick={openWhatsApp}>
+            <button type="submit">Solicitar contato</button>
+            <button
+              type="button"
+              className="whatsapp-button"
+              onClick={() => {
+                if (!name.trim() || !phone.trim() || !need) {
+                  setStatus("Preencha seu nome, WhatsApp e escolha o que você precisa.");
+                  return;
+                }
+                const sent = openContactChannel(
+                  need,
+                  `Nome: ${name.trim()}\nWhatsApp: ${phone.trim()}`,
+                );
+                setStatus(sent ? "Abrindo o canal de contato externo…" : "Configure o WhatsApp ou e-mail da empresa para concluir o contato.");
+              }}
+            >
               <span className="whatsapp-icon" aria-hidden="true">W</span>
               WhatsApp
             </button>
@@ -985,7 +1020,7 @@ function Footer({ mode, onChange }: { mode: SiteMode; onChange: (mode: SiteMode)
           <b>Produtos</b>
           <a href="#produtos">Catálogo</a>
           <a href="#produtos">Destaques</a>
-          <a href="#orcamento">Orçamento</a>
+          <a href="#orcamento">Contato</a>
         </div>
         <div>
           <b>Empresa</b>
@@ -1019,6 +1054,29 @@ const ServiceIcon = ({ index }: { index: number }) => (
     {index === 3 && <><path d="M20 12a8 8 0 1 1-2.3-5.7" /><path d="M20 4v8h-8" /></>}
   </svg>
 );
+
+function ContactLink({
+  subject,
+  className = "",
+  children,
+}: {
+  subject: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      className={className}
+      href="#orcamento"
+      onClick={(event) => {
+        event.preventDefault();
+        openContactChannel(subject);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
 
 export default function App() {
   const [mode, setMode] = useState<SiteMode>(() =>
