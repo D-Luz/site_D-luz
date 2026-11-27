@@ -87,9 +87,11 @@ function CropImage({ src, className = "", alt }: { src: string; className?: stri
   );
 }
 
-const Arrow = () => <span aria-hidden="true">→</span>;
+const Arrow = () => null;
 
 function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
+  const [temperature, setTemperature] = useState(3000);
+  const [activeFilter, setActiveFilter] = useState("Todos");
   const categories = [
     ["Pendentes", "142 modelos", "cat-1"],
     ["Arandelas", "96 modelos", "cat-2"],
@@ -148,7 +150,7 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
               </div>
             </div>
             <div className="hero-product">
-              <CropImage src="bc654.png" className="hero-lamp" alt="Pendente Aurora Globe aceso" />
+              <CropImage src="clean/hero.png" className="hero-lamp" alt="Pendente Aurora Globe aceso" />
               <div className="product-caption">
                 <div>
                   <small>PENDENTE</small>
@@ -159,24 +161,10 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                   <span>2700K</span>
                   <span>IRC 95</span>
                 </div>
-                <b className="round-link">↗</b>
               </div>
             </div>
           </div>
         </section>
-
-        <div className="lighting-benefits">
-          {[
-            "Certificação INMETRO",
-            "Até 80% de economia com LED",
-            "Entrega para todo o Brasil",
-            "Parceria com arquitetos",
-          ].map((item) => (
-            <span key={item}>
-              <i /> {item}
-            </span>
-          ))}
-        </div>
 
         <section className="dark-section" id="produtos">
           <div className="page-shell">
@@ -187,10 +175,10 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
               link="Ver catálogo completo"
             />
             <div className="category-grid">
-              {categories.map(([name, count, cls]) => (
+              {categories.map(([name, count, cls], index) => (
                 <article className="category-card" key={name}>
                   <CropImage
-                    src="34afa.png"
+                    src={`clean/category-${index + 1}.png`}
                     className={cls}
                     alt={`Ambiente com ${name.toLowerCase()}`}
                   />
@@ -199,7 +187,6 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                     <strong>{name}</strong>
                     <span>{count}</span>
                   </div>
-                  <b className="round-link">↗</b>
                 </article>
               ))}
             </div>
@@ -210,32 +197,46 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
           <div className="page-shell">
             <SectionIntro eyebrow="DESTAQUES" title="Os mais procurados" />
             <div className="filter-row">
-              {["Todos", "Pendentes", "Arandelas", "Spots", "Exterior"].map((filter, index) => (
-                <button className={index === 0 ? "active" : ""} key={filter}>
+              {["Todos", "Pendentes", "Arandelas", "Spots", "Exterior"].map((filter) => (
+                <button
+                  type="button"
+                  className={activeFilter === filter ? "active" : ""}
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                >
                   {filter}
                 </button>
               ))}
             </div>
             <div className="product-grid">
-              {products.map(([type, name, power, color], index) => (
-                <article className="lighting-product" key={name}>
-                  <CropImage
-                    src="7f1f9.png"
-                    className={`product-shot product-shot-${index + 1}`}
-                    alt={name}
-                  />
-                  <small>{type}</small>
-                  <h3>{name}</h3>
-                  <div className="spec-row">
-                    <span>{power}</span>
-                    <span>{color}</span>
-                    <span>{index % 2 ? "IP20" : "IRC 95"}</span>
-                  </div>
-                  <a href="#orcamento">
-                    Ver detalhes <Arrow />
-                  </a>
-                </article>
-              ))}
+              {products
+                .filter(([type], index) => {
+                  if (activeFilter === "Todos") return true;
+                  if (activeFilter === "Exterior") return type === "EXTERNO";
+                  if (activeFilter === "Spots") return type === "TRILHOS";
+                  if (activeFilter === "Pendentes") return type === "LUMEN CONE" || type === "HALO DUO";
+                  if (activeFilter === "Arandelas") return index === 1;
+                  return true;
+                })
+                .map(([type, name, power, color], index) => (
+                  <article className="lighting-product" key={name}>
+                    <CropImage
+                      src={`clean/product-${index + 1}.png`}
+                      className={`product-shot product-shot-${index + 1}`}
+                      alt={name}
+                    />
+                    <small>{type}</small>
+                    <h3>{name}</h3>
+                    <div className="spec-row">
+                      <span>{power}</span>
+                      <span>{color}</span>
+                      <span>{index % 2 ? "IP20" : "IRC 95"}</span>
+                    </div>
+                    <a href="#orcamento">
+                      Ver detalhes <Arrow />
+                    </a>
+                  </article>
+                ))}
             </div>
           </div>
         </section>
@@ -268,11 +269,7 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
               ].map(([title, text, tag], index) => (
                 <article className={index === 1 ? "featured" : ""} key={title}>
                   <span className="line-icon">
-                    <CropImage
-                      src="488e9.png"
-                      className={`line-icon-crop line-icon-crop-${index + 1}`}
-                      alt=""
-                    />
+                    <LineIcon index={index} />
                   </span>
                   <h3>{title}</h3>
                   <p>{text}</p>
@@ -296,24 +293,58 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                 combina com cada ambiente.
               </p>
               <div className="temperature-options">
-                {["2700K", "3000K", "4000K", "6500K"].map((temp, index) => (
-                  <button className={index === 1 ? "active" : ""} key={temp}>
-                    <i style={{ opacity: 1 - index * 0.18 }} />
-                    {temp}
-                    <small>{["Quarto", "Sala", "Cozinha", "Garagem"][index]}</small>
-                  </button>
-                ))}
+                {[
+                  [2700, "Quarto"],
+                  [3000, "Sala"],
+                  [4000, "Cozinha"],
+                  [6500, "Garagem"],
+                ].map(([value, room], index) => {
+                  const temperatureValue = Number(value);
+                  return (
+                    <button
+                      type="button"
+                      className={temperature === temperatureValue ? "active" : ""}
+                      key={temperatureValue}
+                      onClick={() => setTemperature(temperatureValue)}
+                    >
+                      <i style={{ opacity: 1 - index * 0.18 }} />
+                      {temperatureValue}K
+                      <small>{room}</small>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <article className="temperature-card">
-              <CropImage src="8b066.png" className="warm-light" alt="Feixe de luz quente" />
-              <small>BRANCO QUENTE</small>
-              <h3>3000K</h3>
+            <article
+              className={`temperature-card ${temperature <= 3000 ? "temperature-warm" : temperature <= 4000 ? "temperature-neutral" : "temperature-cool"}`}
+              style={{
+                boxShadow:
+                  temperature <= 3000
+                    ? "0 20px 60px rgba(255, 174, 92, 0.12)"
+                    : temperature <= 4000
+                      ? "0 20px 60px rgba(224, 232, 210, 0.10)"
+                      : "0 20px 60px rgba(155, 202, 255, 0.16)",
+              }}
+            >
+              <div className="temperature-visual" aria-hidden="true">
+                <span className="temperature-beam" />
+                <span className="temperature-lamp" />
+              </div>
+              <small>
+                {temperature <= 3000
+                  ? "BRANCO QUENTE"
+                  : temperature <= 4000
+                    ? "BRANCO NEUTRO"
+                    : "BRANCO FRIO"}
+              </small>
+              <h3>{temperature}K</h3>
               <input
                 type="range"
                 min="2700"
                 max="6500"
-                defaultValue="3000"
+                step="100"
+                value={temperature}
+                onChange={(event) => setTemperature(Number(event.target.value))}
                 aria-label="Temperatura da luz"
               />
             </article>
@@ -351,11 +382,7 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
               ].map(([title, text], index) => (
                 <article key={title}>
                   <span className="service-icon">
-                    <CropImage
-                      src="d98bd.png"
-                      className={`service-icon-crop service-icon-crop-${index + 1}`}
-                      alt=""
-                    />
+                    <ServiceIcon index={index} />
                   </span>
                   <h3>{title}</h3>
                   <p>{text}</p>
@@ -374,21 +401,21 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
             />
             <div className="portfolio-grid">
               <article className="portfolio-main">
-                <CropImage src="71b05.png" className="portfolio-1" alt="Living Jardins iluminado" />
+                <CropImage src="clean/portfolio-main.png" className="portfolio-1" alt="Living Jardins iluminado" />
                 <div>
                   <small>RESIDENCIAL · SÃO PAULO</small>
                   <h3>Living Jardins</h3>
                 </div>
               </article>
               <article>
-                <CropImage src="71b05.png" className="portfolio-2" alt="Cozinha Vila Nova" />
+                <CropImage src="clean/portfolio-kitchen.png" className="portfolio-2" alt="Cozinha Vila Nova" />
                 <div>
                   <small>GOURMET</small>
                   <h3>Cozinha Vila Nova</h3>
                 </div>
               </article>
               <article>
-                <CropImage src="71b05.png" className="portfolio-3" alt="Fachada Alphaville" />
+                <CropImage src="clean/portfolio-exterior.png" className="portfolio-3" alt="Fachada Alphaville" />
                 <div>
                   <small>EXTERNO</small>
                   <h3>Fachada Alphaville</h3>
@@ -399,13 +426,13 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
         </section>
 
         <section className="testimonial">
-          <CropImage src="4f8be.png" className="quote-mark" alt="" />
+          <CropImage src="clean/quote.png" className="quote-mark" alt="" />
           <blockquote>
             “A D.LUZ entende a luz como parte da arquitetura. O projeto luminotécnico e a curadoria
             das peças elevaram completamente o resultado final da obra.”
           </blockquote>
           <div className="testimonial-author">
-            <CropImage src="4f8be.png" className="author-photo" alt="Marina Albuquerque" />
+            <CropImage src="clean/testimonial.png" className="author-photo" alt="Marina Albuquerque" />
             <span>
               <b>Marina Albuquerque</b>
               <small>Arquiteta · Albuquerque Studio</small>
@@ -477,6 +504,17 @@ function SectionIntro({
 }
 
 function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
+  const [power, setPower] = useState(5500);
+  const [voltage, setVoltage] = useState(220);
+  const current = power / voltage;
+  const breakerOptions = [10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100];
+  const breaker = breakerOptions.find((value) => value >= current * 1.25) ?? 100;
+  const cableRanges = [
+    [1.5, 10], [2.5, 16], [4, 25], [6, 32], [10, 50],
+    [16, 63], [25, 80], [35, 100],
+  ] as const;
+  const cable = cableRanges.find(([, maxBreaker]) => maxBreaker >= breaker)?.[0] ?? 35;
+
   const categories = ["Fios e Cabos", "Disjuntores e Proteção", "Tomadas e Interruptores"];
   const products = [
     ["Cabo Flexível 2,5mm²", "Rolo 100m · 750V", "Mais vendido"],
@@ -532,7 +570,6 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                 <span>Materiais certificados</span>
               </div>
               <div className="electric-symbol">
-                <span />
                 <i />
               </div>
               <div className="electric-caption">
@@ -541,21 +578,10 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                   <small>MONTAGEM DE QUADROS</small>
                   <strong>Projeto residencial · 24 circuitos</strong>
                 </div>
-                <span>↗</span>
               </div>
             </div>
           </div>
         </section>
-
-        <div className="yellow-benefits">
-          {["Eletricistas NR-10", "Produtos INMETRO", "Entrega em até 24h", "Projetos com ART"].map(
-            (item) => (
-              <span key={item}>
-                <i /> {item}
-              </span>
-            ),
-          )}
-        </div>
 
         <section className="cream-section" id="produtos">
           <div className="electrical-shell">
@@ -576,7 +602,6 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                     <h3>{name}</h3>
                     <p>{[320, 185, 410][index]} itens</p>
                   </div>
-                  <b>↗</b>
                 </article>
               ))}
             </div>
@@ -665,46 +690,78 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
               <span className="section-eyebrow">FERRAMENTA GRATUITA</span>
               <h2>Qual cabo e disjuntor usar no seu circuito?</h2>
               <p>
-                Informe a potência do equipamento e a tensão da rede. A calculadora indica a bitola
-                mínima recomendada.
+                Informe a potência do equipamento e a tensão da rede. A calculadora indica uma
+                estimativa inicial conforme a corrente calculada.
               </p>
               <div className="appliance-row">
-                {["Chuveiro 5.500W", "Ar 12.000 BTU", "Cooktop 7.000W"].map((item) => (
-                  <button key={item}>{item}</button>
+                {[
+                  ["Chuveiro 5.500W", 5500],
+                  ["Ar 12.000 BTU", 12000],
+                  ["Cooktop 7.000W", 7000],
+                ].map(([label, value]) => (
+                  <button
+                    type="button"
+                    className={power === value ? "active" : ""}
+                    key={label}
+                    onClick={() => setPower(Number(value))}
+                  >
+                    {label}
+                  </button>
                 ))}
               </div>
             </div>
+
             <div className="calculator-card">
               <div className="voltage">
                 <span>Tensão da rede</span>
-                <button>127V</button>
-                <button className="active">220V</button>
+                <button
+                  type="button"
+                  className={voltage === 127 ? "active" : ""}
+                  onClick={() => setVoltage(127)}
+                >
+                  127V
+                </button>
+                <button
+                  type="button"
+                  className={voltage === 220 ? "active" : ""}
+                  onClick={() => setVoltage(220)}
+                >
+                  220V
+                </button>
               </div>
+
               <label>
                 Potência do equipamento
-                <strong>5.500 W</strong>
+                <strong>{power.toLocaleString("pt-BR")} W</strong>
               </label>
               <input
                 type="range"
                 min="500"
                 max="12000"
-                defaultValue="5500"
+                step="100"
+                value={power}
+                onChange={(event) => setPower(Number(event.target.value))}
                 aria-label="Potência do equipamento"
               />
+
               <div className="calculation-results">
                 <div>
                   <small>CORRENTE</small>
-                  <strong>25,0 A</strong>
+                  <strong>{current.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} A</strong>
                 </div>
                 <div className="active">
                   <small>CABO MÍNIMO</small>
-                  <strong>4 mm²</strong>
+                  <strong>{cable} mm²</strong>
                 </div>
                 <div>
                   <small>DISJUNTOR</small>
-                  <strong>25 A</strong>
+                  <strong>{breaker} A</strong>
                 </div>
               </div>
+
+              <small className="calculation-note">
+                Estimativa técnica, não substitui projeto elétrico ou cálculo conforme NBR 5410.
+              </small>
               <a href="#orcamento">
                 Orçar estes materiais <Arrow />
               </a>
@@ -807,6 +864,31 @@ function ElectricalSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
 
 function ContactBanner({ mode }: { mode: SiteMode }) {
   const lighting = mode === "lighting";
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [need, setNeed] = useState("");
+  const [status, setStatus] = useState("");
+
+  // Substitua apenas o conteúdo entre aspas pelo número oficial da D.LUZ.
+  const whatsappNumber = "";
+
+  const openWhatsApp = () => {
+    if (!name.trim() || !phone.trim() || !need) {
+      setStatus("Preencha seu nome, WhatsApp e escolha o que você precisa.");
+      return;
+    }
+
+    if (!whatsappNumber) {
+      setStatus("O número oficial do WhatsApp será conectado em breve.");
+      return;
+    }
+
+    const message = encodeURIComponent(
+      `Olá! Meu nome é ${name.trim()}. Telefone/WhatsApp: ${phone.trim()}. Preciso de: ${need}.`,
+    );
+    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <section
       className={`contact-section ${lighting ? "contact-dark" : "contact-warm"}`}
@@ -826,28 +908,61 @@ function ContactBanner({ mode }: { mode: SiteMode }) {
               : "Envie sua lista de materiais ou descreva o serviço. Respondemos em poucas horas."}
           </p>
         </div>
-        <form onSubmit={(event) => event.preventDefault()}>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            openWhatsApp();
+          }}
+        >
           <div>
-            <input aria-label="Seu nome" placeholder="Seu nome" />
-            <input aria-label="WhatsApp" placeholder="WhatsApp" inputMode="tel" />
+            <input
+              aria-label="Seu nome"
+              placeholder="Seu nome"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+            />
+            <input
+              aria-label="WhatsApp"
+              placeholder="WhatsApp"
+              inputMode="tel"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              required
+            />
           </div>
-          <select aria-label="Tipo de projeto" defaultValue="">
+          <select
+            aria-label="Tipo de projeto"
+            value={need}
+            onChange={(event) => setNeed(event.target.value)}
+            required
+          >
             <option value="" disabled>
               O que você precisa?
             </option>
-            <option>Orçamento de produtos</option>
-            <option>Projeto completo</option>
-            <option>Visita técnica</option>
+            {lighting ? (
+              <>
+                <option>Orçamento de produtos</option>
+                <option>Projeto completo de iluminação</option>
+                <option>Visita técnica</option>
+              </>
+            ) : (
+              <>
+                <option>Comprar materiais elétricos</option>
+                <option>Instalação elétrica</option>
+                <option>Manutenção ou emergência</option>
+                <option>Projeto elétrico com ART</option>
+              </>
+            )}
           </select>
-          <div>
+          <div className="contact-actions">
             <button type="submit">Solicitar orçamento</button>
-            <a href="https://wa.me/551140005678">
-              <span className="whatsapp-icon">
-                <CropImage src="ef704.png" className="whatsapp-crop" alt="" />
-              </span>
+            <button type="button" className="whatsapp-button" onClick={openWhatsApp}>
+              <span className="whatsapp-icon" aria-hidden="true">W</span>
               WhatsApp
-            </a>
+            </button>
           </div>
+          {status && <p className="contact-status" role="status">{status}</p>}
         </form>
       </div>
     </section>
@@ -887,6 +1002,23 @@ function Footer({ mode, onChange }: { mode: SiteMode; onChange: (mode: SiteMode)
     </footer>
   );
 }
+
+const LineIcon = ({ index }: { index: number }) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    {index === 0 && <><path d="M12 3 20 12l-8 9-8-9 8-9Z" /><circle cx="12" cy="12" r="2.5" /></>}
+    {index === 1 && <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M4 12h16M12 4v16" /></>}
+    {index === 2 && <><path d="M3 16c5-9 13-9 18 0M6 20c3-6 9-6 12 0" /><path d="M12 3v8" /></>}
+  </svg>
+);
+
+const ServiceIcon = ({ index }: { index: number }) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    {index === 0 && <><path d="M9 18h6M10 22h4M8 14a7 7 0 1 1 8 0c-1.1.8-1.4 1.5-1.5 2h-5c-.1-.5-.4-1.2-1.5-2Z" /></>}
+    {index === 1 && <><path d="m12 3 8 4v5c0 5-3.2 8-8 9-4.8-1-8-4-8-9V7l8-4Z" /><path d="m9 12 2 2 4-4" /></>}
+    {index === 2 && <><path d="M4 7h16v12H4zM8 7V4h8v3M4 12h16" /><circle cx="12" cy="15" r="1.5" /></>}
+    {index === 3 && <><path d="M20 12a8 8 0 1 1-2.3-5.7" /><path d="M20 4v8h-8" /></>}
+  </svg>
+);
 
 export default function App() {
   const [mode, setMode] = useState<SiteMode>(() =>
