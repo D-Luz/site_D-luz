@@ -2151,85 +2151,106 @@ body,
     width: 100%;
   }
 }
-.temperature-visual {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(255, 183, 92, 0.24), transparent 26%),
-    linear-gradient(135deg, #171f20, #0d1111);
-}
-.temperature-lamp {
+.lamp-fixture {
   position: absolute;
   left: 50%;
-  top: 29%;
-  width: 82px;
-  height: 82px;
+  top: 2%;
+  width: 300px;
+  height: 440px;
+  transform: translateX(-50%);
+}
+.lamp-canopy {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  width: 58px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #2a3030;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.42);
+  z-index: 7;
+}
+.lamp-cord {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  width: 5px;
+  height: 66px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #4d5351;
+}
+.lamp-halo {
+  position: absolute;
+  left: 50%;
+  top: 92px;
+  width: 210px;
+  height: 210px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: #ffc96b;
-  box-shadow:
-    0 0 24px rgba(255, 201, 107, 0.85),
-    0 0 70px rgba(255, 174, 92, 0.5);
+  background: radial-gradient(circle, rgba(255, 188, 111, 0.26), transparent 68%);
+  filter: blur(8px);
+  z-index: 2;
 }
-.temperature-beam {
+.lamp-shade {
   position: absolute;
   left: 50%;
-  top: 29%;
-  width: 220px;
+  top: 52px;
+  width: 198px;
+  height: 132px;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 44% 44% / 64% 64% 36% 36%;
+  background:
+    linear-gradient(150deg, rgba(210, 218, 215, 0.14), transparent 30%),
+    linear-gradient(145deg, #535a57, #222625 72%);
+  border: 1px solid rgba(215, 222, 219, 0.22);
+  box-shadow:
+    inset 12px 8px 24px rgba(255, 255, 255, 0.08),
+    inset -14px -8px 22px rgba(0, 0, 0, 0.42),
+    0 18px 34px rgba(0, 0, 0, 0.38);
+  z-index: 4;
+}
+.lamp-shade::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 112px;
+  height: 22px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #0d1111;
+  border: 1px solid rgba(220, 226, 223, 0.12);
+  box-shadow: inset 0 4px 8px rgba(255, 255, 255, 0.03);
+  z-index: 7;
+}
+.lamp-globe {
+  position: absolute;
+  left: 50%;
+  top: 168px;
+  width: 86px;
+  height: 86px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: var(--lamp-color, #ffd38a);
+  box-shadow:
+    0 0 18px var(--lamp-glow, rgba(255, 211, 138, 0.72)),
+    0 0 54px var(--lamp-aura, rgba(255, 174, 92, 0.44));
+  transition:
+    background 0.55s ease,
+    box-shadow 0.55s ease,
+    transform 0.55s ease;
+}
+.lamp-beam {
+  position: absolute;
+  left: 50%;
+  top: 178px;
+  width: 230px;
   height: 260px;
   transform: translateX(-50%);
-  clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
-  background: linear-gradient(to bottom, rgba(255, 199, 111, 0.30), transparent);
-}
-.temperature-card.temperature-neutral .temperature-visual {
-  background:
-    radial-gradient(circle at 50% 45%, rgba(220, 231, 210, 0.22), transparent 26%),
-    linear-gradient(135deg, #1a2020, #0d1111);
-}
-.temperature-card.temperature-neutral .temperature-lamp,
-.temperature-card.temperature-neutral .temperature-beam {
-  filter: sepia(0.08) saturate(0.8);
-}
-.temperature-card.temperature-cool .temperature-visual {
-  background:
-    radial-gradient(circle at 50% 45%, rgba(155, 202, 255, 0.22), transparent 26%),
-    linear-gradient(135deg, #182024, #0d1111);
-}
-.temperature-card.temperature-cool .temperature-lamp {
-  background: #d8eaff;
-  box-shadow:
-    0 0 24px rgba(190, 220, 255, 0.9),
-    0 0 70px rgba(155, 202, 255, 0.42);
-}
-.temperature-card.temperature-cool .temperature-beam {
-  background: linear-gradient(to bottom, rgba(190, 220, 255, 0.28), transparent);
-}
-.temperature-card.temperature-2700 .temperature-visual {
-  background:
-    radial-gradient(circle at 50% 29%, rgba(255, 137, 64, 0.34), transparent 23%),
-    linear-gradient(135deg, #201817, #0d1111);
-}
-.temperature-card.temperature-2700 .temperature-lamp {
-  background: #ff9a55;
-  box-shadow:
-    0 0 24px rgba(255, 154, 85, 0.95),
-    0 0 86px rgba(255, 115, 55, 0.58);
-}
-.temperature-card.temperature-2700 .temperature-beam {
-  background: linear-gradient(to bottom, rgba(255, 145, 72, 0.48), transparent);
-}
-.temperature-card.temperature-3000 .temperature-visual {
-  background:
-    radial-gradient(circle at 50% 29%, rgba(255, 201, 107, 0.30), transparent 24%),
-    linear-gradient(135deg, #1d1c18, #0d1111);
-}
-.temperature-card.temperature-3000 .temperature-lamp {
-  background: #ffd98a;
-  box-shadow:
-    0 0 24px rgba(255, 217, 138, 0.92),
-    0 0 86px rgba(255, 188, 92, 0.48);
-}
-.temperature-card.temperature-3000 .temperature-beam {
-  background: linear-gradient(to bottom, rgba(255, 209, 136, 0.38), transparent);
+  clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
+  background: linear-gradient(to bottom, var(--lamp-glow, rgba(255, 216, 151, 0.34)), transparent 94%);
+  transition: background 0.55s ease;
 }

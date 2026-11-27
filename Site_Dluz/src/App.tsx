@@ -322,10 +322,10 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                 ].map(([value, room], index) => {
                   const temperatureValue = Number(value);
                   const swatches: Record<number, string> = {
-                    2700: "#ff9a55",
-                    3000: "#ffd98a",
-                    4000: "#fff2d0",
-                    6500: "#d8eaff",
+                    2700: "#ffad66",
+                    3000: "#ffd39a",
+                    4000: "#fff4d6",
+                    6500: "#d8e9ff",
                   };
                   return (
                     <button
@@ -350,6 +350,33 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
             <article
               className={`temperature-card ${temperature === 2700 ? "temperature-2700" : temperature === 3000 ? "temperature-3000" : temperature <= 4000 ? "temperature-neutral" : "temperature-cool"}`}
               style={{
+                "--lamp-color": temperature <= 2800
+                  ? "#ffad66"
+                  : temperature <= 3500
+                    ? "#ffd39a"
+                    : temperature <= 4500
+                      ? "#fff4d6"
+                      : temperature <= 5500
+                        ? "#edf4ff"
+                        : "#d8e9ff",
+                "--lamp-glow": temperature <= 2800
+                  ? "rgba(255, 173, 102, 0.96)"
+                  : temperature <= 3500
+                    ? "rgba(255, 211, 154, 0.94)"
+                    : temperature <= 4500
+                      ? "rgba(255, 244, 214, 0.92)"
+                      : temperature <= 5500
+                        ? "rgba(237, 244, 255, 0.96)"
+                        : "rgba(216, 233, 255, 0.98)",
+                "--lamp-aura": temperature <= 2800
+                  ? "rgba(255, 132, 58, 0.60)"
+                  : temperature <= 3500
+                    ? "rgba(255, 188, 92, 0.54)"
+                    : temperature <= 4500
+                      ? "rgba(235, 230, 203, 0.46)"
+                      : temperature <= 5500
+                        ? "rgba(205, 221, 240, 0.52)"
+                        : "rgba(155, 202, 255, 0.58)",
                 boxShadow:
                   temperature === 2700
                     ? "0 20px 60px rgba(255, 137, 64, 0.18)"
@@ -358,11 +385,18 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                       : temperature <= 4000
                         ? "0 20px 60px rgba(224, 232, 210, 0.10)"
                         : "0 20px 60px rgba(155, 202, 255, 0.16)",
-              }}
+              } as React.CSSProperties}
             >
               <div className="temperature-visual" aria-hidden="true">
-                <span className="temperature-beam" />
-                <span className="temperature-lamp" />
+                <div className="lamp-fixture">
+                  <span className="lamp-canopy" />
+                  <span className="lamp-cord" />
+                  <span className="lamp-halo" />
+                  <span className="lamp-shade" />
+                  <span className="lamp-globe" />
+                  <span className="lamp-beam" />
+                  <span className="lamp-floor" />
+                </div>
               </div>
               <small>
                 {temperature <= 3000
