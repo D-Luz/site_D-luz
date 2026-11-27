@@ -789,9 +789,8 @@ body,
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #ffd98b;
-  box-shadow: 0 0 16px #ffc250;
   margin-bottom: auto;
+  transition: transform 0.25s ease, background 0.35s ease, box-shadow 0.35s ease;
 }
 .temperature-options small {
   color: #849198;
@@ -2205,4 +2204,32 @@ body,
 }
 .temperature-card.temperature-cool .temperature-beam {
   background: linear-gradient(to bottom, rgba(190, 220, 255, 0.28), transparent);
+}
+.temperature-card.temperature-2700 .temperature-visual {
+  background:
+    radial-gradient(circle at 50% 29%, rgba(255, 137, 64, 0.34), transparent 23%),
+    linear-gradient(135deg, #201817, #0d1111);
+}
+.temperature-card.temperature-2700 .temperature-lamp {
+  background: #ff9a55;
+  box-shadow:
+    0 0 24px rgba(255, 154, 85, 0.95),
+    0 0 86px rgba(255, 115, 55, 0.58);
+}
+.temperature-card.temperature-2700 .temperature-beam {
+  background: linear-gradient(to bottom, rgba(255, 145, 72, 0.48), transparent);
+}
+.temperature-card.temperature-3000 .temperature-visual {
+  background:
+    radial-gradient(circle at 50% 29%, rgba(255, 201, 107, 0.30), transparent 24%),
+    linear-gradient(135deg, #1d1c18, #0d1111);
+}
+.temperature-card.temperature-3000 .temperature-lamp {
+  background: #ffd98a;
+  box-shadow:
+    0 0 24px rgba(255, 217, 138, 0.92),
+    0 0 86px rgba(255, 188, 92, 0.48);
+}
+.temperature-card.temperature-3000 .temperature-beam {
+  background: linear-gradient(to bottom, rgba(255, 209, 136, 0.38), transparent);
 }

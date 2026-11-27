@@ -321,6 +321,12 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                   [6500, "Garagem"],
                 ].map(([value, room], index) => {
                   const temperatureValue = Number(value);
+                  const swatches: Record<number, string> = {
+                    2700: "#ff9a55",
+                    3000: "#ffd98a",
+                    4000: "#fff2d0",
+                    6500: "#d8eaff",
+                  };
                   return (
                     <button
                       type="button"
@@ -328,7 +334,12 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
                       key={temperatureValue}
                       onClick={() => setTemperature(temperatureValue)}
                     >
-                      <i style={{ opacity: 1 - index * 0.18 }} />
+                      <i
+                        style={{
+                          background: swatches[temperatureValue],
+                          boxShadow: `0 0 16px ${swatches[temperatureValue]}`,
+                        }}
+                      />
                       {temperatureValue}K
                       <small>{room}</small>
                     </button>
@@ -337,14 +348,16 @@ function LightingSite({ onChange }: { onChange: (mode: SiteMode) => void }) {
               </div>
             </div>
             <article
-              className={`temperature-card ${temperature <= 3000 ? "temperature-warm" : temperature <= 4000 ? "temperature-neutral" : "temperature-cool"}`}
+              className={`temperature-card ${temperature === 2700 ? "temperature-2700" : temperature === 3000 ? "temperature-3000" : temperature <= 4000 ? "temperature-neutral" : "temperature-cool"}`}
               style={{
                 boxShadow:
-                  temperature <= 3000
-                    ? "0 20px 60px rgba(255, 174, 92, 0.12)"
-                    : temperature <= 4000
-                      ? "0 20px 60px rgba(224, 232, 210, 0.10)"
-                      : "0 20px 60px rgba(155, 202, 255, 0.16)",
+                  temperature === 2700
+                    ? "0 20px 60px rgba(255, 137, 64, 0.18)"
+                    : temperature === 3000
+                      ? "0 20px 60px rgba(255, 188, 92, 0.16)"
+                      : temperature <= 4000
+                        ? "0 20px 60px rgba(224, 232, 210, 0.10)"
+                        : "0 20px 60px rgba(155, 202, 255, 0.16)",
               }}
             >
               <div className="temperature-visual" aria-hidden="true">
